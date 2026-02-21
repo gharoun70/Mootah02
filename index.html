@@ -55,8 +55,8 @@
 
     <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #ddd; padding-top: 15px;">
         <p style="font-size: 11px; color: #888; margin:0;">
-            هذا المستند صادر إلكترونياً من منظومة متاح ويعد ملزماً قانوناً بمجرد الموافقة.<br>
-            حقوق الملكية محفوظة © د. جورج هارون سند 2026
+            هذا المستند صادر إلكترونياً ويعد ملزماً للطرفين بمجرد الضغط على زر الموافقة.<br>
+            جميع الحقوق محفوظة © د. جورج هارون سند 2026
         </p>
     </div>
 </div>
@@ -64,10 +64,10 @@
 <button class="main-btn" id="dl-btn" onclick="executeMootahNDA()">أوافق وتحميل الميثاق ✅</button>
 
 <script>
-    // --- بيانات د. جورج المعتمدة ---
+    // بيانات د. جورج المعتمدة
     const MY_EMAIL = "gharoun70@gmail.com"; 
     const MY_PHONE = "201096404193"; 
-    const FORMSPREE_ID = "YOUR_ID"; // تذكر وضع كود Formspree هنا لتفعيل الإيميل
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mbdazloj"; // تم الربط بنجاح
 
     const now = new Date();
     const timestamp = "MT-" + now.getFullYear() + (now.getMonth()+1) + now.getDate() + "-" + now.getHours() + now.getMinutes();
@@ -80,28 +80,25 @@
         btn.disabled = true;
 
         try {
-            // 1. توليد وتحميل الـ PDF للمستثمر
+            // 1. توليد وتحميل الـ PDF
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-            pdf.save(`Mootah_NDA_DrGeorge_${timestamp}.pdf`);
+            pdf.save(`Mootah_NDA_${timestamp}.pdf`);
 
-            // 2. إرسال الإشعار التلقائي للإيميل (gharoun70@gmail.com)
-            if(FORMSPREE_ID !== "YOUR_ID") {
-                fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        _replyto: MY_EMAIL,
-                        subject: "تنبيه: توقيع ميثاق متاح - طرف جديد وافق الآن",
-                        message: `دكتور جورج، هناك شخص قام بالموافقة على ميثاق السرية وتحميل الملف.\nكود التوثيق: ${timestamp}\nالوقت: ${now.toLocaleString()}`
-                    })
-                });
-            }
+            // 2. إرسال الإشعار الفوري للإيميل (تنبيه المتابعة)
+            fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subject: "تنبيه هام: توقيع ميثاق متاح جديد",
+                    message: `دكتور جورج، هناك مستثمر/شريك وافق على ميثاق السرية الآن.\nكود التوثيق: ${timestamp}\nتوقيت العملية: ${now.toLocaleString()}`
+                })
+            });
 
-            // 3. تحديث الزر وفتح الواتساب برسالة الموافقة التلقائية
+            // 3. تحديث الزر وفتح الواتساب
             btn.innerText = "تم التوثيق بنجاح ✅";
             btn.style.background = "var(--green)";
 
@@ -109,11 +106,10 @@
                 const whatsappMsg = `موافق.. تم تحميل إيصال السرية الرقمي الخاص بمشروع متاح ✅\nكود التوثيق: ${timestamp}`;
                 const waUrl = `https://wa.me/${MY_PHONE}?text=${encodeURIComponent(whatsappMsg)}`;
                 window.open(waUrl, '_blank');
-            }, 1200);
+            }, 1500);
 
         } catch (error) {
-            console.error(error);
-            alert("حدث خطأ تقني بسيط. يرجى المحاولة مرة أخرى.");
+            alert("حدث خطأ. حاول مرة أخرى.");
             btn.innerText = "أوافق وتحميل الميثاق ✅";
             btn.disabled = false;
         }
