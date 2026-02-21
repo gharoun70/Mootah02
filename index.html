@@ -9,10 +9,11 @@
     <style>
         :root { --brown: #5D4037; --orange: #E67E22; --green: #27ae60; }
         body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* تصميم الإيصال الرقمي */
         #receipt-content {
             width: 650px; background: white; padding: 40px; border: 2px solid #eee;
             border-top: 15px solid var(--orange); color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
         }
         .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 25px; padding-bottom: 20px; }
         .info-bar { display: flex; justify-content: space-between; background: #fff8f1; padding: 12px; font-size: 14px; margin-bottom: 25px; border-radius: 5px; border: 1px solid #ffe0b2; }
@@ -20,6 +21,8 @@
         .col { width: 50%; text-align: justify; line-height: 1.7; font-size: 13px; }
         .col-ar { border-left: 1px solid #eee; padding-left: 20px; }
         .col-en { direction: ltr; text-align: left; padding-right: 20px; color: #555; }
+        
+        /* تصميم الزر التفاعلي */
         .main-btn { 
             background: var(--brown); color: white; border: none; padding: 22px 90px; 
             font-size: 24px; border-radius: 12px; cursor: pointer; margin-top: 40px;
@@ -34,7 +37,7 @@
 <div id="receipt-content">
     <div class="header">
         <h1 style="color: var(--brown); margin:0; font-size: 38px;">متاح — Mootah</h1>
-        <p style="color: var(--orange); font-size: 18px; margin-top: 5px;">ميثاق حماية السرية والملكية الفكرية | Digital NDA</p>
+        <p style="color: var(--orange); font-size: 18px; margin-top: 5px; font-weight: bold;">ميثاق حماية السرية والملكية الفكرية | Digital NDA</p>
     </div>
 
     <div class="info-bar">
@@ -44,12 +47,12 @@
 
     <div class="agreement-box">
         <div class="col col-ar">
-            <b style="color: var(--brown); font-size: 15px;">بند السرية:</b><br>
-            أوافق أنا المطلع على هذا الملف، بصفتي طرفاً مهتماً، على الحفاظ على سرية كافة البيانات والخطط الفنية والمالية الخاصة بمنظومة "متاح". وأتعهد بعدم تسريبها أو استخدامها تجارياً دون موافقة كتابية رسمية من صاحب المشروع <b>(د. جورج هارون)</b>.
+            <b style="color: var(--brown); font-size: 15px;">بند السرية وحماية الفكرة:</b><br>
+            بصفتي طرفاً مطلعاً، أوافق على الحفاظ على سرية كافة البيانات والخطط الفنية والمالية الخاصة بمنظومة "متاح". وأتعهد بعدم تسريبها أو استخدامها تجارياً دون موافقة كتابية من صاحب المشروع <b>(د. جورج هارون سند)</b>.
         </div>
         <div class="col col-en">
             <b style="color: var(--brown); font-size: 15px;">Confidentiality Clause:</b><br>
-            I, the undersigned, agree to maintain the absolute confidentiality of all data, technical, and financial plans related to "Mootah". I commit not to leak or use these ideas commercially without formal written consent from <b>Dr. George Haroun</b>.
+            I agree to maintain the absolute confidentiality of all data and strategic plans related to "Mootah". I commit not to disclose or use these ideas commercially without written consent from <b>Dr. George Haroun Sanda</b>.
         </div>
     </div>
 
@@ -61,26 +64,26 @@
     </div>
 </div>
 
-<button class="main-btn" id="dl-btn" onclick="executeMootahNDA()">أوافق وتحميل الميثاق ✅</button>
+<button class="main-btn" id="dl-btn" onclick="processMootahNDA()">أوافق وتحميل الميثاق ✅</button>
 
 <script>
-    // بيانات د. جورج المعتمدة
-    const MY_EMAIL = "gharoun70@gmail.com"; 
+    // --- بيانات د. جورج المعتمدة ---
     const MY_PHONE = "201096404193"; 
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mbdazloj"; // تم الربط بنجاح
+    const FORMSPREE_URL = "https://formspree.io/f/mbdazloj"; // الرابط الخاص بك
 
+    // توليد التاريخ والكود تلقائياً
     const now = new Date();
     const timestamp = "MT-" + now.getFullYear() + (now.getMonth()+1) + now.getDate() + "-" + now.getHours() + now.getMinutes();
     document.getElementById('ts-code').innerText = timestamp;
     document.getElementById('date-now').innerText = now.toLocaleString('ar-EG');
 
-    async function executeMootahNDA() {
+    async function processMootahNDA() {
         const btn = document.getElementById('dl-btn');
-        btn.innerText = "جاري التوثيق والتحميل...";
+        btn.innerText = "جاري التوثيق...";
         btn.disabled = true;
 
         try {
-            // 1. توليد وتحميل الـ PDF
+            // 1. توليد وتحميل ملف الـ PDF
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
@@ -88,28 +91,27 @@
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
             pdf.save(`Mootah_NDA_${timestamp}.pdf`);
 
-            // 2. إرسال الإشعار الفوري للإيميل (تنبيه المتابعة)
-            fetch(FORMSPREE_ENDPOINT, {
+            // 2. إرسال إشعار خفي لـ Formspree (للتوثيق في الإيميل لاحقاً)
+            fetch(FORMSPREE_URL, {
                 method: 'POST',
                 headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    subject: "تنبيه هام: توقيع ميثاق متاح جديد",
-                    message: `دكتور جورج، هناك مستثمر/شريك وافق على ميثاق السرية الآن.\nكود التوثيق: ${timestamp}\nتوقيت العملية: ${now.toLocaleString()}`
+                    subject: "توقيع ميثاق متاح جديد",
+                    message: `تم التوقيع بنجاح. كود: ${timestamp}. الوقت: ${now.toLocaleString()}`
                 })
-            });
+            }).catch(e => console.log("Formspree Notification skipped"));
 
-            // 3. تحديث الزر وفتح الواتساب
-            btn.innerText = "تم التوثيق بنجاح ✅";
+            // 3. التنبيه الفوري عبر الواتساب (المتابعة الحية)
+            btn.innerText = "تم بنجاح ✅ جاري المتابعة...";
             btn.style.background = "var(--green)";
 
             setTimeout(() => {
-                const whatsappMsg = `موافق.. تم تحميل إيصال السرية الرقمي الخاص بمشروع متاح ✅\nكود التوثيق: ${timestamp}`;
-                const waUrl = `https://wa.me/${MY_PHONE}?text=${encodeURIComponent(whatsappMsg)}`;
-                window.open(waUrl, '_blank');
-            }, 1500);
+                const whatsappMsg = `دكتور جورج، أنا أوافق على ميثاق السرية لمشروع متاح وقد قمت بتحميل الإيصال الرقمي.\nكود التوثيق: ${timestamp}`;
+                window.open(`https://wa.me/${MY_PHONE}?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+            }, 1000);
 
         } catch (error) {
-            alert("حدث خطأ. حاول مرة أخرى.");
+            alert("حدث خطأ بسيط، حاول مرة أخرى.");
             btn.innerText = "أوافق وتحميل الميثاق ✅";
             btn.disabled = false;
         }
