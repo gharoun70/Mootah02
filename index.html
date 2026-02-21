@@ -45,18 +45,18 @@
     <div class="agreement-box">
         <div class="col col-ar">
             <b style="color: var(--brown); font-size: 15px;">بند السرية:</b><br>
-            أوافق أنا المطلع على هذا الملف، بصفتي طرفاً مهتماً، على الحفاظ على سرية كافة البيانات والخطط الفنية والمالية الخاصة بمنظومة "متاح". وأتعهد بعدم تسريبها أو استخدامها تجارياً دون موافقة كتابية رسمية من صاحب المشروع (د. جورج هارون).
+            أوافق أنا المطلع على هذا الملف، بصفتي طرفاً مهتماً، على الحفاظ على سرية كافة البيانات والخطط الفنية والمالية الخاصة بمنظومة "متاح". وأتعهد بعدم تسريبها أو استخدامها تجارياً دون موافقة كتابية رسمية من صاحب المشروع <b>(د. جورج هارون)</b>.
         </div>
         <div class="col col-en">
             <b style="color: var(--brown); font-size: 15px;">Confidentiality Clause:</b><br>
-            I, the undersigned, agree to maintain the absolute confidentiality of all data, technical, and financial plans related to "Mootah". I commit not to leak or use these ideas commercially without formal written consent from Dr. George Haroun.
+            I, the undersigned, agree to maintain the absolute confidentiality of all data, technical, and financial plans related to "Mootah". I commit not to leak or use these ideas commercially without formal written consent from <b>Dr. George Haroun</b>.
         </div>
     </div>
 
     <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #ddd; padding-top: 15px;">
         <p style="font-size: 11px; color: #888; margin:0;">
-            هذا المستند صادر إلكترونياً ويعد ملزماً للطرفين بمجرد الضغط على زر الموافقة.<br>
-            جميع الحقوق محفوظة © د. جورج هارون سند 2026
+            هذا المستند صادر إلكترونياً من منظومة متاح ويعد ملزماً قانوناً بمجرد الموافقة.<br>
+            حقوق الملكية محفوظة © د. جورج هارون سند 2026
         </p>
     </div>
 </div>
@@ -64,10 +64,10 @@
 <button class="main-btn" id="dl-btn" onclick="executeMootahNDA()">أوافق وتحميل الميثاق ✅</button>
 
 <script>
-    // --- بيانات د. جورج المحدثة ---
+    // --- بيانات د. جورج المعتمدة ---
     const MY_EMAIL = "gharoun70@gmail.com"; 
-    const MY_PHONE = "201096404193"; // تم وضع الرقم بالصيغة الدولية
-    const FORMSPREE_ID = "YOUR_ID"; // استبدل YOUR_ID بالكود من موقع Formspree ليصلك التنبيه
+    const MY_PHONE = "201096404193"; 
+    const FORMSPREE_ID = "YOUR_ID"; // تذكر وضع كود Formspree هنا لتفعيل الإيميل
 
     const now = new Date();
     const timestamp = "MT-" + now.getFullYear() + (now.getMonth()+1) + now.getDate() + "-" + now.getHours() + now.getMinutes();
@@ -80,28 +80,28 @@
         btn.disabled = true;
 
         try {
-            // 1. توليد وتحميل الـ PDF
+            // 1. توليد وتحميل الـ PDF للمستثمر
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-            pdf.save(`Mootah_NDA_${timestamp}.pdf`);
+            pdf.save(`Mootah_NDA_DrGeorge_${timestamp}.pdf`);
 
-            // 2. إرسال إشعار فوري للإيميل
+            // 2. إرسال الإشعار التلقائي للإيميل (gharoun70@gmail.com)
             if(FORMSPREE_ID !== "YOUR_ID") {
                 fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
                     method: 'POST',
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        email: MY_EMAIL,
-                        subject: "تنبيه: توقيع ميثاق متاح جديد",
-                        message: `تم التوقيع بنجاح.\nكود التوثيق: ${timestamp}\nالوقت: ${now.toLocaleString()}`
+                        _replyto: MY_EMAIL,
+                        subject: "تنبيه: توقيع ميثاق متاح - طرف جديد وافق الآن",
+                        message: `دكتور جورج، هناك شخص قام بالموافقة على ميثاق السرية وتحميل الملف.\nكود التوثيق: ${timestamp}\nالوقت: ${now.toLocaleString()}`
                     })
                 });
             }
 
-            // 3. تحديث الزر وفتح الواتساب برسالة الموافقة
+            // 3. تحديث الزر وفتح الواتساب برسالة الموافقة التلقائية
             btn.innerText = "تم التوثيق بنجاح ✅";
             btn.style.background = "var(--green)";
 
@@ -109,10 +109,11 @@
                 const whatsappMsg = `موافق.. تم تحميل إيصال السرية الرقمي الخاص بمشروع متاح ✅\nكود التوثيق: ${timestamp}`;
                 const waUrl = `https://wa.me/${MY_PHONE}?text=${encodeURIComponent(whatsappMsg)}`;
                 window.open(waUrl, '_blank');
-            }, 1500);
+            }, 1200);
 
         } catch (error) {
-            alert("عذراً، حدث خطأ. حاول مرة أخرى.");
+            console.error(error);
+            alert("حدث خطأ تقني بسيط. يرجى المحاولة مرة أخرى.");
             btn.innerText = "أوافق وتحميل الميثاق ✅";
             btn.disabled = false;
         }
