@@ -2,139 +2,117 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mootah NDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --brown: #5D4037; --orange: #E67E22; }
-        body { font-family: 'Arial', sans-serif; background: #f0f0f0; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         
-        /* الحاوية الأساسية */
-        #receipt-to-save { 
+        /* تصميم الوثيقة */
+        #nda-document { 
             width: 100%; max-width: 500px; background: white; padding: 20px; 
-            border-top: 10px solid var(--orange); box-sizing: border-box;
+            border-top: 10px solid #E67E22; box-sizing: border-box;
         }
         
-        h1 { color: var(--brown); font-size: 22px; text-align: center; margin: 5px 0; }
-        .sub-title { color: var(--orange); text-align: center; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
+        h1 { color: #5D4037; text-align: center; font-size: 22px; margin: 5px 0; }
+        .sub { color: #E67E22; text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
 
-        .info { background: #fdf2e9; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px; }
+        .info-box { background: #fdf2e9; padding: 10px; border-radius: 5px; font-size: 13px; margin-bottom: 15px; }
 
-        /* تعديل الموبايل الحقيقي */
-        .agreement-box { display: block; width: 100%; }
-        .col { width: 100%; font-size: 13px; line-height: 1.5; text-align: justify; margin-bottom: 15px; box-sizing: border-box; }
-        .en { direction: ltr; text-align: left; border-top: 1px dashed #ddd; padding-top: 10px; }
+        /* دعم الموبايل: العربي فوق والإنجليزي تحت */
+        .content-block { width: 100%; font-size: 14px; line-height: 1.6; text-align: justify; margin-bottom: 20px; }
+        .en-text { direction: ltr; text-align: left; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px; }
         
-        .action-area { width: 100%; max-width: 500px; margin-top: 15px; text-align: center; }
-        .phone-input-box { display: none; background: white; padding: 15px; border-radius: 8px; border: 2px solid var(--orange); margin-bottom: 10px; }
-        input { width: 90%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
+        /* منطقة الأزرار */
+        .controls { width: 100%; max-width: 500px; margin-top: 15px; text-align: center; }
+        .input-group { display: none; background: #fff; padding: 20px; border: 2px solid #E67E22; border-radius: 10px; }
+        input { width: 90%; padding: 12px; font-size: 16px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
         
         .btn { 
-            background: var(--brown); color: white; padding: 15px; border: none; 
+            background: #5D4037; color: white; padding: 15px; border: none; 
             font-size: 18px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;
         }
+        #wa-link { display: none; background: #27ae60; text-decoration: none; color: white; padding: 15px; border-radius: 8px; display: none; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="receipt-to-save">
+<div id="nda-document">
     <h1>متاح — Mootah</h1>
-    <p class="sub-title">إيصال ميثاق السرية الرقمي | Confidentiality Receipt</p>
+    <p class="sub">إيصال ميثاق السرية الرقمي</p>
     
-    <div class="info">
-        <b>كود التوثيق:</b> <span id="code"></span><br>
-        <b>التاريخ:</b> <span id="date"></span>
-        <div id="display-phone" style="margin-top:5px; color:var(--brown); font-weight:bold;"></div>
+    <div class="info-box">
+        <b>كود التوثيق:</b> <span id="c-code"></span><br>
+        <b>التاريخ:</b> <span id="c-date"></span>
+        <div id="c-phone" style="margin-top:5px; font-weight:bold;"></div>
     </div>
 
-    <div class="agreement-box">
-        <div class="col ar">
-            <b style="color: var(--brown)">ميثاق حماية الملكية:</b><br>
-            1. عدم مشاركة أي معلومات أو خطط مع طرف ثالث.<br>
-            2. عدم استخدام الأفكار تجارياً دون إذن مسبق.<br>
-            3. هذا الإيصال مرجع رسمي لاتفاق السرية.
-        </div>
-        <div class="col en">
-            <b style="color: var(--brown)">IP Protection Agreement:</b><br>
-            1. No sharing of info/plans with third parties.<br>
-            2. No commercial use without prior permission.<br>
-            3. This receipt is a legal NDA reference.
-        </div>
+    <div class="content-block">
+        <b style="color: #5D4037">ميثاق حماية الملكية الفكرية:</b><br>
+        1. عدم مشاركة أي معلومات أو خطط مع طرف ثالث.<br>
+        2. عدم استخدام الأفكار تجارياً دون إذن مسبق.<br>
+        3. هذا الإيصال مرجع رسمي لاتفاق السرية.
     </div>
-    <p style="font-size: 9px; text-align:center; color:#999; margin-top:10px;">حقوق الملكية محفوظة د. جورج هارون © 2026</p>
+
+    <div class="content-block en-text">
+        <b style="color: #5D4037">IP Protection Agreement:</b><br>
+        1. No sharing of info/plans with third parties.<br>
+        2. No commercial use without prior permission.<br>
+        3. This receipt is a legal NDA reference.
+    </div>
 </div>
 
-<div class="action-area">
-    <button id="btn-1" class="btn" onclick="showInput()">أوافق على الميثاق ✅</button>
+<div class="controls">
+    <button id="step1-btn" class="btn" onclick="goToStep2()">أوافق على الميثاق ✅</button>
 
-    <div id="phone-box" class="phone-input-box">
-        <input type="tel" id="user-phone" placeholder="أدخل رقم موبايلك لتفعيل التحميل">
-        <button class="btn" style="margin-top:10px; background: var(--orange);" onclick="generatePDF()">تأكيد وتحميل الوثيقة فوراً 📥</button>
+    <div id="step2-box" class="input-group">
+        <input type="tel" id="u-phone" placeholder="أدخل رقم موبايلك (واتساب)">
+        <button class="btn" style="background: #E67E22;" onclick="doDownload()">تأكيد وتحميل الوثيقة 📥</button>
     </div>
+
+    <a id="wa-link" href="#">تم التحميل بنجاح.. اضغط للانتقال للواتساب ✅</a>
 </div>
 
 <script>
-    const now = new Date();
-    const tsCode = "MT-" + Math.floor(Date.now() / 1000);
-    document.getElementById('code').innerText = tsCode;
-    document.getElementById('date').innerText = now.toLocaleString('ar-EG');
+    const ts = "MT-" + Date.now();
+    document.getElementById('c-code').innerText = ts;
+    document.getElementById('c-date').innerText = new Date().toLocaleString('ar-EG');
 
-    function showInput() {
-        document.getElementById('btn-1').style.display = 'none';
-        document.getElementById('phone-box').style.display = 'block';
+    function goToStep2() {
+        document.getElementById('step1-btn').style.display = 'none';
+        document.getElementById('step2-box').style.display = 'block';
     }
 
-    async function generatePDF() {
-        const phone = document.getElementById('user-phone').value;
-        if (phone.length < 10) {
-            alert("يرجى إدخال رقم هاتف صحيح");
-            return;
-        }
+    async function doDownload() {
+        const phone = document.getElementById('u-phone').value;
+        if(phone.length < 10) { alert("يرجى وضع رقم صحيح"); return; }
 
-        const btn = document.querySelector('#phone-box .btn');
-        btn.innerText = "جاري التحميل...";
+        document.getElementById('c-phone').innerText = "رقم الموثق: " + phone;
+        
+        const btn = document.querySelector('#step2-box .btn');
+        btn.innerText = "جاري الحفظ...";
         btn.disabled = true;
 
-        // وضع الرقم في التصميم قبل التصوير
-        document.getElementById('display-phone').innerText = "رقم الموثق: " + phone;
-
-        const element = document.getElementById('receipt-to-save');
+        const doc = document.getElementById('nda-document');
+        const canvas = await html2canvas(doc, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
         
-        try {
-            const canvas = await html2canvas(element, { 
-                scale: 3, // جودة عالية جداً للنص
-                backgroundColor: "#ffffff",
-                useCORS: true 
-            });
-            
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+        
+        // التحميل الفوري
+        pdf.save(`Mootah_NDA_${phone}.pdf`);
 
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            
-            // تحميل تلقائي مباشر للملف
-            pdf.save(`Mootah_NDA_${phone}.pdf`);
-
-            btn.innerText = "تم التحميل ✅";
-
-            // فتح الواتساب
-            setTimeout(() => {
-                const myNum = "201000000000"; // ضع رقمك هنا
-                const msg = `موافق.. تم توقيع ميثاق متاح.\nرقمي: ${phone}\nكود: ${tsCode}`;
-                window.location.href = `https://wa.me/${myNum}?text=${encodeURIComponent(msg)}`;
-            }, 1000);
-
-        } catch (e) {
-            alert("حدث خطأ في التحميل، يرجى المحاولة مرة أخرى");
-            btn.disabled = false;
-        }
+        // إظهار زر الواتساب النهائي
+        document.getElementById('step2-box').style.display = 'none';
+        const wa = document.getElementById('wa-link');
+        const myNum = "201000000000"; // رقمك
+        wa.href = `https://wa.me/${myNum}?text=${encodeURIComponent("موافق.. تم توقيع ميثاق متاح.\nرقمي: "+phone+"\nكود: "+ts)}`;
+        wa.style.display = 'block';
     }
 </script>
+
 </body>
 </html>
