@@ -9,13 +9,20 @@
     <style>
         :root { --brown: #5D4037; --orange: #E67E22; --green: #27ae60; }
         body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        #receipt-content { width: 100%; max-width: 550px; background: white; padding: 30px; border: 1px solid #ddd; border-top: 15px solid var(--orange); box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px; }
+        #receipt-content { 
+            width: 100%; max-width: 550px; background: white; padding: 30px; 
+            border: 1px solid #ddd; border-top: 15px solid var(--orange); 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px;
+        }
         .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
         .input-group { background: #fff8f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2; }
         .input-field { margin-bottom: 15px; text-align: right; }
         label { font-weight: bold; color: var(--brown); display: block; margin-bottom: 5px; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        .main-btn { background: var(--brown); color: white; border: none; padding: 20px; font-size: 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        .main-btn { 
+            background: var(--brown); color: white; border: none; padding: 20px; 
+            font-size: 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; 
+        }
     </style>
 </head>
 <body>
@@ -26,49 +33,74 @@
         <p style="color: var(--orange); font-weight: bold;">ميثاق السرية الرقمي</p>
     </div>
 
-    <form id="mootahForm">
-        <div class="input-group">
-            <div class="input-field">
-                <label>الاسم الكامل:</label>
-                <input type="text" name="InvestorName" id="v_name" placeholder="أدخل اسمك هنا" required>
-            </div>
-            <div class="input-field">
-                <label>رقم هاتف الواتساب:</label>
-                <input type="tel" name="MobileNumber" id="v_phone" placeholder="أدخل رقمك هنا" required>
-            </div>
+    <div class="input-group">
+        <div class="input-field">
+            <label>الاسم الكامل للمستثمر:</label>
+            <input type="text" id="v_name" placeholder="أدخل اسمك هنا" required>
         </div>
-        <button type="button" class="main-btn" id="dl-btn" onclick="submitToGeorge()">أوافق وتحميل الميثاق ✅</button>
-    </form>
+        <div class="input-field">
+            <label>رقم هاتف (واتساب):</label>
+            <input type="tel" id="v_phone" placeholder="أدخل رقمك هنا" required>
+        </div>
+    </div>
+    
+    <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 20px;">
+        بضغطك على الزر، يتم توثيق موافقتك وإرسالها لدكتور جورج هارون.
+    </p>
+    
+    <button type="button" class="main-btn" id="dl-btn" onclick="submitToGeorge()">أوافق وتحميل الإيصال ✅</button>
 </div>
 
 <script>
     async function submitToGeorge() {
         const name = document.getElementById('v_name').value;
         const phone = document.getElementById('v_phone').value;
-        if (!name || !phone) { alert("برجاء كتابة الاسم ورقم الهاتف أولاً"); return; }
+
+        if (!name || !phone) {
+            alert("يا فندم، برجاء كتابة الاسم ورقم الهاتف أولاً");
+            return;
+        }
+
         const btn = document.getElementById('dl-btn');
-        btn.innerText = "جاري الحفظ...";
+        btn.innerText = "جاري الحفظ وإرسال التنبيه...";
         btn.disabled = true;
 
         try {
-            // إرسال البيانات لـ Formspree لتصلك في الإيميل
-            const formData = new FormData();
-            formData.append("اسم_المستثمر", name);
-            formData.append("رقم_الهاتف", phone);
-            await fetch("https://formspree.io/f/mbdazloj", { method: "POST", body: formData, headers: { 'Accept': 'application/json' } });
+            // توليد كود توثيق فريد للعملية
+            const now = new Date();
+            const timestamp = "MT-" + now.getTime();
 
-            // توليد الـ PDF
+            // 1. إرسال البيانات فوراً لـ Formspree (هنا قمنا بتسمية البيانات لتظهر في الإيميل)
+            const formData = new FormData();
+            formData.append("إسم_المستثمر", name);
+            formData.append("رقم_الواتساب", phone);
+            formData.append("كود_التوثيق", timestamp);
+
+            await fetch("https://formspree.io/f/mbdazloj", {
+                method: "POST",
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            });
+
+            // 2. توليد وتحميل الـ PDF للمستثمر
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
             pdf.save(`Mootah_NDA_${name}.pdf`);
 
-            // فتح الواتساب الخاص بك بالرقم الصحيح
-            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أوافق على ميثاق سرية متاح.`;
+            // 3. فتح واتساب د. جورج بالرسالة الصحيحة
+            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أوافق على ميثاق سرية "متاح" وقد حملت الإيصال برقم توثيق: ${timestamp}`;
             window.open(`https://wa.me/201096404193?text=${encodeURIComponent(waMsg)}`, '_blank');
-            btn.innerText = "تم التوثيق ✅";
-        } catch (e) { alert("حدث خطأ، حاول ثانية"); btn.disabled = false; }
+
+            btn.innerText = "تم التوثيق والإرسال ✅";
+            btn.style.background = "#27ae60";
+
+        } catch (e) {
+            alert("حدث خطأ بسيط، حاول مرة أخرى.");
+            btn.disabled = false;
+            btn.innerText = "أوافق وتحميل الإيصال ✅";
+        }
     }
 </script>
 </body>
