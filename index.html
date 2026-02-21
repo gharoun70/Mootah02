@@ -2,34 +2,41 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ميثاق متاح الرقمي</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 15px; direction: rtl; display: flex; flex-direction: column; align-items: center; }
+        /* ضبط الشاشة والخطوط لتكون ضخمة وواضحة على الموبايل */
+        body { font-family: 'Arial', sans-serif; background: #f4f4f4; margin: 0; padding: 10px; direction: rtl; display: flex; flex-direction: column; align-items: center; }
+        
         .document-box { 
             width: 100%; max-width: 600px; background: white; padding: 25px; 
-            border-top: 10px solid #E67E22; border-radius: 10px; box-sizing: border-box;
+            border-top: 12px solid #E67E22; border-radius: 10px; box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        h1 { color: #5D4037; font-size: 28px; text-align: center; margin: 10px 0; }
-        .sub { color: #E67E22; font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }
+
+        h1 { color: #5D4037; font-size: 32px; text-align: center; margin: 10px 0; }
+        .sub { color: #E67E22; font-weight: bold; font-size: 20px; text-align: center; margin-bottom: 25px; }
         
-        .text-content { font-size: 20px; line-height: 1.8; color: #333; margin-bottom: 20px; text-align: justify; }
-        .en-text { direction: ltr; text-align: left; border-top: 2px dashed #eee; padding-top: 20px; margin-top: 20px; font-size: 18px; }
+        /* نصوص واضحة جداً للقراءة المباشرة */
+        .text-content { font-size: 22px; line-height: 1.8; color: #333; margin-bottom: 25px; text-align: justify; }
+        .en-text { direction: ltr; text-align: left; border-top: 2px dashed #eee; padding-top: 25px; margin-top: 25px; font-size: 20px; }
 
-        .info-bar { background: #fdf2e9; padding: 15px; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
+        .info-bar { background: #fdf2e9; padding: 15px; border-radius: 8px; font-size: 18px; margin-bottom: 20px; }
 
+        /* منطقة التفاعل */
         .controls { width: 100%; max-width: 600px; margin-top: 20px; }
-        .step-box { background: white; padding: 20px; border-radius: 10px; border: 2px solid #5D4037; display: none; text-align: center; }
-        input { width: 90%; padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+        .step-box { background: white; padding: 25px; border-radius: 10px; border: 3px solid #E67E22; display: none; text-align: center; }
+        input { width: 90%; padding: 18px; font-size: 20px; border: 2px solid #ddd; border-radius: 8px; text-align: center; margin-bottom: 20px; }
         
         .btn { 
-            background: #5D4037; color: white; padding: 18px; border: none; 
-            font-size: 20px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold;
+            background: #5D4037; color: white; padding: 20px; border: none; 
+            font-size: 22px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .btn-orange { background: #E67E22; margin-top: 10px; }
+        .btn-orange { background: #E67E22; }
     </style>
 </head>
 <body>
@@ -41,18 +48,18 @@
     <div class="info-bar">
         <b>كود التوثيق:</b> <span id="out-code"></span><br>
         <b>التاريخ:</b> <span id="out-date"></span><br>
-        <div id="out-phone" style="color:#5D4037; font-weight:bold; margin-top:5px;"></div>
+        <div id="out-phone" style="color:#5D4037; font-weight:bold; margin-top:8px;"></div>
     </div>
 
     <div class="text-content">
-        <b>ميثاق السرية:</b><br>
+        <b style="color: #5D4037; font-size: 24px;">ميثاق السرية:</b><br>
         • يلتزم الطرف المطلع بحماية كافة معلومات مشروع "متاح".<br>
-        • يمنع استخدام الأفكار تجارياً أو مشاركتها مع طرف ثالث.<br>
+        • يمنع استخدام الأفكار تجارياً أو مشاركتها مع أي طرف ثالث.<br>
         • هذا التوثيق الرقمي ملزم قانوناً بمجرد التحميل.
     </div>
 
     <div class="text-content en-text">
-        <b>NDA Agreement:</b><br>
+        <b style="color: #5D4037; font-size: 22px;">Confidentiality Agreement:</b><br>
         • Recipient agrees to protect all "Mootah" project info.<br>
         • Commercial use or sharing with 3rd parties is strictly prohibited.<br>
         • This digital receipt is legally binding upon download.
@@ -63,14 +70,18 @@
     <button id="btn-step1" class="btn" onclick="startProcess()">أوافق على الميثاق المذكور أعلاه ✅</button>
 
     <div id="box-step2" class="step-box">
-        <p style="font-weight:bold; font-size:18px;">برجاء إدخال رقم هاتفك لتفعيل التحميل:</p>
-        <input type="tel" id="user-mobile" placeholder="أدخل رقم الموبايل هنا">
-        <button class="btn btn-orange" onclick="downloadAndRedirect()">تأكيد وتحميل الوثيقة 📥</button>
+        <p style="font-weight:bold; font-size:20px; margin-top:0;">أدخل رقم موبايلك (واتساب) للتفعيل:</p>
+        <input type="tel" id="user-mobile" placeholder="مثال: 010XXXXXXXX">
+        <button class="btn btn-orange" onclick="downloadAndRedirect()">تأكيد وتحميل الوثيقة فوراً 📥</button>
     </div>
 </div>
 
 <script>
-    const ts = "MT-ID-" + Date.now().toString().slice(-6);
+    // بيانات دكتور جورج
+    const MY_PHONE = "201096404193"; 
+    const MY_EMAIL = "gharoun70@gmail.com";
+
+    const ts = "MT-ID-" + Math.floor(Math.random() * 1000000);
     document.getElementById('out-code').innerText = ts;
     document.getElementById('out-date').innerText = new Date().toLocaleDateString('ar-EG');
 
@@ -81,27 +92,27 @@
 
     async function downloadAndRedirect() {
         const phone = document.getElementById('user-mobile').value;
-        if (phone.length < 10) { alert("يرجى كتابة رقم صحيح"); return; }
+        if (phone.length < 10) { alert("يرجى كتابة رقم موبايل صحيح"); return; }
 
         document.getElementById('out-phone').innerText = "رقم الطرف المطلع: " + phone;
         const btnLoad = document.querySelector('.btn-orange');
-        btnLoad.innerText = "جاري الحفظ والانتقال...";
+        btnLoad.innerText = "جاري التحميل...";
         btnLoad.disabled = true;
 
-        // 1. التقاط وتحميل الـ PDF
         const doc = document.getElementById('nda-file');
         const canvas = await html2canvas(doc, { scale: 2 });
         const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+        
+        // 1. تحميل الـ PDF فوراً
         pdf.save(`Mootah_NDA_${ts}.pdf`);
 
-        // 2. الانتقال المباشر للواتساب بعد ثانية واحدة لضمان بدء التحميل
+        // 2. الانتقال التلقائي للواتساب
         setTimeout(() => {
-            const myNum = "201000000000"; // ضَع رقمك هنا يا دكتور
-            const msg = `موافق.. تم توقيع ميثاق متاح.\nالرقم: ${phone}\nالكود: ${ts}`;
-            window.location.href = `https://wa.me/${myNum}?text=${encodeURIComponent(msg)}`;
+            const msg = `موافق.. تم توقيع ميثاق متاح ✅\nرقمي: ${phone}\nكود التوثيق: ${ts}`;
+            window.location.href = `https://wa.me/${MY_PHONE}?text=${encodeURIComponent(msg)}`;
         }, 1200);
     }
 </script>
