@@ -8,8 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
-        /* 1. حل مشكلة حجم الخط والشاشة */
-        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 15px; direction: rtl; }
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 15px; direction: rtl; display: flex; flex-direction: column; align-items: center; }
         .document-box { 
             width: 100%; max-width: 600px; background: white; padding: 25px; 
             border-top: 10px solid #E67E22; border-radius: 10px; box-sizing: border-box;
@@ -17,13 +16,11 @@
         h1 { color: #5D4037; font-size: 28px; text-align: center; margin: 10px 0; }
         .sub { color: #E67E22; font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }
         
-        /* الخطوط داخل الوثيقة واضحة وكبيرة */
         .text-content { font-size: 20px; line-height: 1.8; color: #333; margin-bottom: 20px; text-align: justify; }
         .en-text { direction: ltr; text-align: left; border-top: 2px dashed #eee; padding-top: 20px; margin-top: 20px; font-size: 18px; }
 
         .info-bar { background: #fdf2e9; padding: 15px; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
 
-        /* 2. الأزرار ومنطقة التفاعل */
         .controls { width: 100%; max-width: 600px; margin-top: 20px; }
         .step-box { background: white; padding: 20px; border-radius: 10px; border: 2px solid #5D4037; display: none; text-align: center; }
         input { width: 90%; padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; text-align: center; margin-bottom: 15px; }
@@ -33,7 +30,6 @@
             font-size: 20px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold;
         }
         .btn-orange { background: #E67E22; margin-top: 10px; }
-        .btn-green { background: #27ae60; text-decoration: none; display: none; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -51,7 +47,7 @@
     <div class="text-content">
         <b>ميثاق السرية:</b><br>
         • يلتزم الطرف المطلع بحماية كافة معلومات مشروع "متاح".<br>
-        • يمنع استخدام الأفكار تجارياً أو مشاركتها مع أي طرف ثالث.<br>
+        • يمنع استخدام الأفكار تجارياً أو مشاركتها مع طرف ثالث.<br>
         • هذا التوثيق الرقمي ملزم قانوناً بمجرد التحميل.
     </div>
 
@@ -69,51 +65,44 @@
     <div id="box-step2" class="step-box">
         <p style="font-weight:bold; font-size:18px;">برجاء إدخال رقم هاتفك لتفعيل التحميل:</p>
         <input type="tel" id="user-mobile" placeholder="أدخل رقم الموبايل هنا">
-        <button class="btn btn-orange" onclick="downloadFile()">تأكيد وتحميل نسخة الـ PDF 📥</button>
+        <button class="btn btn-orange" onclick="downloadAndRedirect()">تأكيد وتحميل الوثيقة 📥</button>
     </div>
-
-    <a id="btn-step3" href="#" class="btn btn-green">تم التحميل بنجاح.. اضغط للواتساب ✅</a>
 </div>
 
 <script>
-    // 1. توليد الكود والتاريخ
     const ts = "MT-ID-" + Date.now().toString().slice(-6);
     document.getElementById('out-code').innerText = ts;
     document.getElementById('out-date').innerText = new Date().toLocaleDateString('ar-EG');
 
-    // 2. تفعيل الخطوة الثانية
     function startProcess() {
         document.getElementById('btn-step1').style.display = 'none';
         document.getElementById('box-step2').style.display = 'block';
     }
 
-    // 3. التحميل الفعلي للـ PDF
-    async function downloadFile() {
+    async function downloadAndRedirect() {
         const phone = document.getElementById('user-mobile').value;
         if (phone.length < 10) { alert("يرجى كتابة رقم صحيح"); return; }
 
         document.getElementById('out-phone').innerText = "رقم الطرف المطلع: " + phone;
         const btnLoad = document.querySelector('.btn-orange');
-        btnLoad.innerText = "جاري الحفظ...";
+        btnLoad.innerText = "جاري الحفظ والانتقال...";
+        btnLoad.disabled = true;
 
-        // التقاط الوثيقة
+        // 1. التقاط وتحميل الـ PDF
         const doc = document.getElementById('nda-file');
         const canvas = await html2canvas(doc, { scale: 2 });
         const imgData = canvas.toDataURL('image/png');
-        
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
-        
-        // التحميل
         pdf.save(`Mootah_NDA_${ts}.pdf`);
 
-        // 4. إظهار زر الواتساب النهائي
-        document.getElementById('box-step2').style.display = 'none';
-        const waBtn = document.getElementById('btn-step3');
-        const myNum = "201000000000"; // رقم دكتور جورج
-        waBtn.href = `https://wa.me/${myNum}?text=${encodeURIComponent("موافق.. تم توقيع ميثاق متاح.\nالرقم: "+phone+"\nالكود: "+ts)}`;
-        waBtn.style.display = 'block';
+        // 2. الانتقال المباشر للواتساب بعد ثانية واحدة لضمان بدء التحميل
+        setTimeout(() => {
+            const myNum = "201000000000"; // ضَع رقمك هنا يا دكتور
+            const msg = `موافق.. تم توقيع ميثاق متاح.\nالرقم: ${phone}\nالكود: ${ts}`;
+            window.location.href = `https://wa.me/${myNum}?text=${encodeURIComponent(msg)}`;
+        }, 1200);
     }
 </script>
 
