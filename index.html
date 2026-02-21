@@ -15,7 +15,7 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px;
         }
         .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
-        .user-data-box { background: #fff8f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .input-group { background: #fff8f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2; }
         .input-field { margin-bottom: 15px; text-align: right; }
         label { font-weight: bold; color: var(--brown); display: block; margin-bottom: 5px; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
@@ -33,47 +33,54 @@
         <p style="color: var(--orange); font-weight: bold;">ميثاق السرية الرقمي</p>
     </div>
 
-    <form id="ndaForm" action="https://formspree.io/f/mbdazloj" method="POST">
-        <div class="user-data-box">
+    <form id="mootahForm">
+        <div class="input-group">
             <div class="input-field">
-                <label>اسمك الثلاثي:</label>
-                <input type="text" name="اسم_المستثمر" id="v_name" required>
+                <label>الاسم الكامل للمستثمر:</label>
+                <input type="text" name="InvestorName" id="v_name" placeholder="أدخل اسمك هنا" required>
             </div>
             <div class="input-field">
-                <label>رقم واتساب المتابعة:</label>
-                <input type="tel" name="رقم_الهاتف" id="v_phone" required>
+                <label>رقم هاتف (واتساب):</label>
+                <input type="tel" name="MobileNumber" id="v_phone" placeholder="أدخل رقمك هنا" required>
             </div>
         </div>
-        <p style="font-size: 12px; color: #666; text-align: center;">بضغطك على الزر، أنت توافق على ميثاق السرية الخاص بدكتور جورج هارون.</p>
-        <button type="button" class="main-btn" id="dl-btn" onclick="submitEverything()">أوافق وتحميل الإيصال ✅</button>
+        
+        <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 20px;">
+            بضغطك على الزر، يتم توثيق موافقتك وإرسالها لدكتور جورج هارون.
+        </p>
+        
+        <button type="button" class="main-btn" id="dl-btn" onclick="submitToGeorge()">أوافق وتحميل الإيصال ✅</button>
     </form>
 </div>
 
 <script>
-    async function submitEverything() {
+    async function submitToGeorge() {
         const name = document.getElementById('v_name').value;
         const phone = document.getElementById('v_phone').value;
 
         if (!name || !phone) {
-            alert("برجاء إدخال الإسم ورقم الهاتف");
+            alert("يا فندم، برجاء كتابة الاسم ورقم الهاتف أولاً");
             return;
         }
 
         const btn = document.getElementById('dl-btn');
-        btn.innerText = "جاري الحفظ وإرسال التنبيه...";
+        btn.innerText = "جاري إرسال البيانات...";
         btn.disabled = true;
 
-        // 1. إرسال البيانات فوراً لـ Formspree (بشكل يدوي للتأكد)
-        const formData = new FormData(document.getElementById('ndaForm'));
-        
         try {
+            // 1. إرسال البيانات يدوياً كنموذج (Form Data)
+            const formData = new FormData();
+            formData.append("InvestorName", name);
+            formData.append("MobileNumber", phone);
+            formData.append("_subject", "توقيع ميثاق جديد من: " + name);
+
             await fetch("https://formspree.io/f/mbdazloj", {
                 method: "POST",
                 body: formData,
                 headers: { 'Accept': 'application/json' }
             });
 
-            // 2. توليد الـ PDF
+            // 2. توليد وتحميل الـ PDF
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
@@ -81,13 +88,16 @@
             pdf.save(`Mootah_NDA_${name}.pdf`);
 
             // 3. فتح الواتساب
-            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أوافق على ميثاق سرية "متاح" وحملت الإيصال.`;
+            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أوافق على ميثاق سرية متاح وقد حملت الإيصال.`;
             window.open(`https://wa.me/201096404193?text=${encodeURIComponent(waMsg)}`, '_blank');
 
-            btn.innerText = "تم التوثيق بنجاح ✅";
+            btn.innerText = "تم التوثيق والإرسال ✅";
+            btn.style.background = "var(--green)";
+
         } catch (e) {
-            alert("حدث خطأ، برجاء المحاولة مرة أخرى");
+            alert("عذراً، حدث خطأ. تأكد من اتصال الإنترنت وحاول ثانية.");
             btn.disabled = false;
+            btn.innerText = "أوافق وتحميل الإيصال ✅";
         }
     }
 </script>
