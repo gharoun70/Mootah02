@@ -9,11 +9,34 @@
     <style>
         :root { --brown: #5D4037; --orange: #E67E22; --green: #27ae60; }
         body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        #receipt-content { width: 650px; background: white; padding: 40px; border: 2px solid #eee; border-top: 15px solid var(--orange); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 20px; }
-        .input-group { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; text-align: right; }
-        .main-btn { background: var(--brown); color: white; border: none; padding: 20px 80px; font-size: 22px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; }
+        
+        #receipt-content { 
+            width: 100%; max-width: 600px; background: white; padding: 30px; 
+            border: 2px solid #eee; border-top: 15px solid var(--orange); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px;
+        }
+        
+        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 15px; }
+        
+        .user-data-box { 
+            background: #fff8f1; padding: 20px; border-radius: 8px; 
+            border: 1px solid #ffe0b2; margin: 20px 0;
+        }
+        
+        .input-field { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { font-weight: bold; color: var(--brown); margin-bottom: 5px; font-size: 14px; }
+        input { 
+            padding: 12px; border: 1px solid #ccc; border-radius: 6px; 
+            font-size: 16px; width: 100%; box-sizing: border-box; text-align: right;
+        }
+
+        .agreement-text { font-size: 12px; line-height: 1.6; color: #555; text-align: justify; margin-bottom: 20px; }
+        
+        .main-btn { 
+            background: var(--brown); color: white; border: none; padding: 18px; 
+            font-size: 20px; border-radius: 10px; cursor: pointer; font-weight: bold; 
+            width: 100%; transition: 0.3s;
+        }
         .main-btn:hover { background: var(--orange); }
     </style>
 </head>
@@ -22,68 +45,70 @@
 <div id="receipt-content">
     <div class="header">
         <h1 style="color: var(--brown); margin:0;">متاح — Mootah</h1>
-        <p style="color: var(--orange);">ميثاق السرية الرقمي | Digital NDA</p>
+        <p style="color: var(--orange); font-weight: bold; margin: 5px 0;">ميثاق السرية وحماية الملكية الفكرية</p>
     </div>
 
-    <div class="input-group">
-        <label>إسم المطلع (الطرف الثاني):</label>
-        <input type="text" id="user-name" placeholder="اكتب الإسم بالكامل" required>
-        
-        <label>رقم الواتساب للمتابعة:</label>
-        <input type="tel" id="user-phone" placeholder="مثال: 010XXXXXXXX" required>
+    <div class="user-data-box">
+        <div class="input-field">
+            <label>اسم المطلع (بالكامل):</label>
+            <input type="text" id="visitor_name" placeholder="أدخل اسمك الثلاثي" required>
+        </div>
+        <div class="input-field">
+            <label>رقم الواتساب الخاص بك:</label>
+            <input type="tel" id="visitor_phone" placeholder="مثال: 01012345678" required>
+        </div>
     </div>
 
-    <div style="font-size: 13px; line-height: 1.6; color: #333; background: #fff8f1; padding: 15px; border-radius: 5px;">
-        <b>تعهد:</b> أوافق بصفتي مطلعاً على مشروع "متاح" الحفاظ على سرية المعلومات وعدم استخدامها تجارياً دون إذن من <b>د. جورج هارون</b>.
+    <div class="agreement-text">
+        تعهد صريح: أقر أنا المذكور أعلاه بالتزامي الكامل بعدم تسريب أي معلومات أو تفاصيل تخص مشروع "متاح" (Mootah) لأي جهة كانت، وأقر بأن هذا التوثيق ملزم قانوناً.
     </div>
 </div>
 
-<button class="main-btn" id="dl-btn" onclick="processNDA()">أوافق وتحميل الميثاق ✅</button>
+<button class="main-btn" id="dl-btn" onclick="sendAndDownload()">أوافق وتحميل الإيصال ✅</button>
 
 <script>
-    const FORMSPREE_URL = "https://formspree.io/f/mbdazloj";
-    const MY_REAL_PHONE = "201096404193"; // رقمك الصحيح يا دكتور
+    async function sendAndDownload() {
+        const name = document.getElementById('visitor_name').value;
+        const phone = document.getElementById('visitor_phone').value;
 
-    async function processNDA() {
-        const name = document.getElementById('user-name').value;
-        const phone = document.getElementById('user-phone').value;
-
-        if(!name || !phone) {
-            alert("من فضلك ادخل الإسم ورقم الهاتف للمتابعة");
+        if (!name || !phone) {
+            alert("عفواً يا فندم، يجب إدخال الاسم ورقم الواتساب للمتابعة.");
             return;
         }
 
         const btn = document.getElementById('dl-btn');
-        btn.innerText = "جاري التوثيق...";
+        btn.innerText = "جاري التوثيق وإرسال البيانات...";
         btn.disabled = true;
 
         try {
-            // 1. توليد PDF
+            // 1. إرسال البيانات فوراً لبريد د. جورج (الإشعار)
+            await fetch("https://formspree.io/f/mbdazloj", {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    الاسم: name,
+                    رقم_الواتساب: phone,
+                    الرسالة: "هذا الشخص وافق على ميثاق السرية"
+                })
+            });
+
+            // 2. توليد الـ PDF وتحميله
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
             pdf.save(`Mootah_NDA_${name}.pdf`);
 
-            // 2. إرسال البيانات للإيميل (لتصلك بياناته كاملة)
-            await fetch(FORMSPREE_URL, {
-                method: 'POST',
-                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    اسم_المستثمر: name,
-                    رقم_الهاتف: phone,
-                    الرسالة: "تمت الموافقة على ميثاق السرية"
-                })
-            });
+            // 3. فتح واتساب د. جورج برسالة التوثيق
+            const waMsg = `دكتور جورج، أنا ${name}، رقم هاتفي ${phone}. لقد قرأت ميثاق سرية "متاح" وأوافق عليه تماماً.`;
+            window.open(`https://wa.me/201096404193?text=${encodeURIComponent(waMsg)}`, '_blank');
 
-            // 3. فتح الواتساب الخاص بك
-            const msg = `دكتور جورج، أنا ${name} (رقمي: ${phone})، أوافق على ميثاق سرية متاح وقد حملت الإيصال.`;
-            window.open(`https://wa.me/${MY_REAL_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+            btn.innerText = "تم التوثيق بنجاح ✅";
+            btn.style.background = "#27ae60";
 
-            btn.innerText = "تم بنجاح ✅";
-            btn.style.background = "var(--green)";
         } catch (e) {
-            alert("حدث خطأ، حاول ثانية");
+            alert("حدث خطأ في الاتصال، حاول مرة أخرى.");
+            btn.innerText = "أوافق وتحميل الإيصال ✅";
             btn.disabled = false;
         }
     }
