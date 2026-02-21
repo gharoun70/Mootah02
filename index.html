@@ -3,76 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متاح - توثيق ميثاق السرية</title>
+    <title>متاح - ميثاق السرية الرقمي</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --brown: #5D4037; --orange: #E67E22; --green: #27ae60; }
-        body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* تصميم المستند */
         #receipt-content { 
-            width: 100%; max-width: 550px; background: white; padding: 30px; 
+            width: 100%; max-width: 650px; background: white; padding: 35px; 
             border: 1px solid #ddd; border-top: 15px solid var(--orange); 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px;
         }
-        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
-        .input-group { background: #fff8f1; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2; }
+        
+        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 15px; }
+        
+        /* صندوق الميثاق (البنود) */
+        .nda-text-box {
+            background: #fdfdfd; border: 1px solid #eee; padding: 20px; 
+            margin-bottom: 25px; border-radius: 8px; line-height: 1.8;
+            font-size: 14px; color: #444; text-align: justify;
+        }
+        .nda-text-box h3 { color: var(--brown); margin-top: 0; border-right: 4px solid var(--orange); padding-right: 10px; }
+
+        /* صندوق البيانات */
+        .input-group { background: #fff8f1; padding: 20px; border-radius: 8px; border: 1px solid #ffe0b2; margin-bottom: 20px; }
         .input-field { margin-bottom: 15px; text-align: right; }
         label { font-weight: bold; color: var(--brown); display: block; margin-bottom: 5px; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        
         .main-btn { 
             background: var(--brown); color: white; border: none; padding: 20px; 
             font-size: 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; 
+            transition: 0.3s;
         }
+        .main-btn:hover { background: var(--orange); }
     </style>
 </head>
 <body>
 
 <div id="receipt-content">
     <div class="header">
-        <h2 style="color: var(--brown); margin:0;">متاح — Mootah</h2>
-        <p style="color: var(--orange); font-weight: bold;">ميثاق السرية الرقمي</p>
+        <h1 style="color: var(--brown); margin:0;">متاح — Mootah</h1>
+        <p style="color: var(--orange); font-weight: bold;">ميثاق حماية السرية والملكية الفكرية</p>
+    </div>
+
+    <div class="nda-text-box">
+        <h3>بنود الميثاق الرقمي:</h3>
+        <p>1. <b>السرية التامة:</b> يلتزم الطرف المطلع بالحفاظ على سرية كافة المعلومات والبيانات الفنية والمالية والتشغيلية الخاصة بمشروع "متاح".</p>
+        <p>2. <b>الملكية الفكرية:</b> كافة الأفكار والنماذج المعروضة هي ملكية حصرية للدكتور جورج هارون، ولا يحق للطرف الثاني اقتباسها أو تنفيذها أو مشاركتها مع أي جهة دون إذن كتابي رسمي.</p>
+        <p>3. <b>الالتزام القانوني:</b> يعتبر ضغطك على زر الموافقة وإدخال بياناتك بمثابة توقيع إلكتروني ملزم يثبت اطلاعك وموافقتك على هذه الشروط.</p>
     </div>
 
     <div class="input-group">
         <div class="input-field">
-            <label>الاسم الكامل للمستثمر:</label>
-            <input type="text" id="v_name" placeholder="أدخل اسمك هنا" required>
+            <label>الاسم الكامل للمستثمر / الشريك:</label>
+            <input type="text" id="v_name" placeholder="اكتب اسمك الثلاثي هنا" required>
         </div>
         <div class="input-field">
-            <label>رقم هاتف (واتساب):</label>
-            <input type="tel" id="v_phone" placeholder="أدخل رقمك هنا" required>
+            <label>رقم الواتساب (لإرسال كود التفعيل):</label>
+            <input type="tel" id="v_phone" placeholder="مثال: 01096404193" required>
         </div>
     </div>
     
-    <p style="font-size: 12px; color: #666; text-align: center; margin-bottom: 20px;">
-        بضغطك على الزر، يتم توثيق موافقتك وإرسالها لدكتور جورج هارون.
-    </p>
-    
-    <button type="button" class="main-btn" id="dl-btn" onclick="submitToGeorge()">أوافق وتحميل الإيصال ✅</button>
+    <button type="button" class="main-btn" id="dl-btn" onclick="confirmMootahNDA()">أقر بقراءة البنود وأوافق ✅</button>
 </div>
 
+<div style="margin-top: 20px; color: #888; font-size: 12px;">حقوق الملكية محفوظة © د. جورج هارون سند 2026</div>
+
 <script>
-    async function submitToGeorge() {
+    async function confirmMootahNDA() {
         const name = document.getElementById('v_name').value;
         const phone = document.getElementById('v_phone').value;
 
         if (!name || !phone) {
-            alert("يا فندم، برجاء كتابة الاسم ورقم الهاتف أولاً");
+            alert("عفواً يا فندم، يجب كتابة الاسم ورقم الهاتف لإتمام عملية التوثيق.");
             return;
         }
 
         const btn = document.getElementById('dl-btn');
-        btn.innerText = "جاري الحفظ وإرسال التنبيه...";
+        btn.innerText = "جاري التوثيق الرقمي...";
         btn.disabled = true;
 
         try {
-            // توليد كود توثيق فريد للعملية
-            const now = new Date();
-            const timestamp = "MT-" + now.getTime();
+            const timestamp = "MT-" + Math.floor(Date.now() / 1000);
 
-            // 1. إرسال البيانات فوراً لـ Formspree (هنا قمنا بتسمية البيانات لتظهر في الإيميل)
+            // 1. إرسال البيانات فوراً لبريد د. جورج
             const formData = new FormData();
-            formData.append("إسم_المستثمر", name);
+            formData.append("اسم_الموقع", name);
             formData.append("رقم_الواتساب", phone);
             formData.append("كود_التوثيق", timestamp);
 
@@ -82,24 +101,24 @@
                 headers: { 'Accept': 'application/json' }
             });
 
-            // 2. توليد وتحميل الـ PDF للمستثمر
+            // 2. توليد وتحميل الـ PDF كإيصال رسمي للمستثمر
             const canvas = await html2canvas(document.getElementById('receipt-content'), { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
             pdf.save(`Mootah_NDA_${name}.pdf`);
 
-            // 3. فتح واتساب د. جورج بالرسالة الصحيحة
-            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أوافق على ميثاق سرية "متاح" وقد حملت الإيصال برقم توثيق: ${timestamp}`;
+            // 3. فتح الواتساب الخاص بك للتواصل المباشر
+            const waMsg = `دكتور جورج، أنا ${name}، رقمي ${phone}. أقر بموافقتي على ميثاق سرية "متاح" وحملت نسخة الإيصال برقم: ${timestamp}`;
             window.open(`https://wa.me/201096404193?text=${encodeURIComponent(waMsg)}`, '_blank');
 
-            btn.innerText = "تم التوثيق والإرسال ✅";
+            btn.innerText = "تم التوثيق بنجاح ✅";
             btn.style.background = "#27ae60";
 
         } catch (e) {
-            alert("حدث خطأ بسيط، حاول مرة أخرى.");
+            alert("حدث خطأ في النظام، يرجى المحاولة مرة أخرى.");
             btn.disabled = false;
-            btn.innerText = "أوافق وتحميل الإيصال ✅";
+            btn.innerText = "أوافق وتحميل الميثاق ✅";
         }
     }
 </script>
